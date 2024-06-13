@@ -35,8 +35,19 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("CheckResult")
     private fun foo() {
-        val observable = Observable.range(1, 1000)
-        observable.toFlowable(BackpressureStrategy.LATEST).observeOn(Schedulers.io(),false,5).subscribe(
+        val observable = Observable.interval(1, TimeUnit.SECONDS).take(10).publish()
+        observable.connect()
+        observable.subscribe(
+            {
+                Log.d(TAG, "foo: $it")
+            },
+            {
+                Log.d(
+                    TAG, "foo: ${it.message}"
+                )
+            })
+        Thread.sleep(3500)
+        observable.subscribe(
             {
                 Log.d(TAG, "foo: $it")
             },
