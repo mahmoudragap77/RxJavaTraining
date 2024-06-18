@@ -20,6 +20,7 @@ import io.reactivex.rxjava3.core.SingleObserver
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
@@ -35,9 +36,15 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("CheckResult")
     private fun foo() {
-        val observable = Observable.interval(1, TimeUnit.SECONDS).take(10).publish()
-        observable.connect()
-        observable.subscribe(
+        val observable = Observable.interval(1, TimeUnit.SECONDS).take(10)
+
+        val subject = PublishSubject.create<Int>()
+//        observable.subscribe(subject)
+
+//        Thread.sleep(3000)
+        subject.onNext(5)
+        subject.onNext(10)
+        subject.subscribe(
             {
                 Log.d(TAG, "foo: $it")
             },
@@ -46,16 +53,9 @@ class MainActivity : AppCompatActivity() {
                     TAG, "foo: ${it.message}"
                 )
             })
-        Thread.sleep(3500)
-        observable.subscribe(
-            {
-                Log.d(TAG, "foo: $it")
-            },
-            {
-                Log.d(
-                    TAG, "foo: ${it.message}"
-                )
-            })
+
+        subject.onNext(100)
+        subject.onNext(200)
     }
 
 
